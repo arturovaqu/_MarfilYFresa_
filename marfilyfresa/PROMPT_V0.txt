@@ -1,0 +1,91 @@
+# Prompt para v0.dev — MarfilFresa 🍓
+# Copia y pega este texto completo en v0.dev
+
+Crea una web completa para "MarfilFresa", una tienda de joyería
+colorida y divertida dirigida a chicas jóvenes. Vende sobre todo
+joyería (anillos, collares, pulseras, pendientes) y de vez en cuando
+novedades como bolsos y sudaderas.
+
+────────────────────────────────────────
+ESTILO
+────────────────────────────────────────
+Clean girl minimalista pastel. Bonito, aireado y cercano.
+No elegante ni lujoso — adorable, fresco y con personalidad.
+Usa emojis con mucha moderación, solo donde aporten.
+
+────────────────────────────────────────
+PALETA EXACTA (no cambies estos colores)
+────────────────────────────────────────
+- Fondo principal:   #efe7dd  (crema cálido)
+- Terracota acento:  #d1774c  (botones, badges, acentos)
+- Marrón oscuro:     #764b36  (hover, bordes, footer, texto)
+- Texto principal:   #764b36
+- Texto suave:       #a07860  (subtítulos, placeholders)
+- Tarjetas:          #FFFFFF
+
+────────────────────────────────────────
+TIPOGRAFÍA
+────────────────────────────────────────
+- Títulos: "DM Serif Display" de Google Fonts
+- Cuerpo y UI: "DM Sans" de Google Fonts
+
+────────────────────────────────────────
+COMPONENTES A CREAR
+────────────────────────────────────────
+
+1. NAVBAR (sticky, fondo blanco con sombra suave)
+   - Izquierda: nombre "MarfilFresa" en DM Serif Display con un 🍓 pequeño
+   - Centro: links → Inicio · Catálogo · Nosotros · Contacto
+   - Derecha: icono de corazón con badge de contador (número en rosa)
+   - En móvil: menú hamburguesa
+
+2. HERO (altura 90vh)
+   - Fondo #efe7dd
+   - Título grande en DM Serif Display: "Joyería que te hace sonreír"
+   - Subtítulo en DM Sans suave: "Piezas coloridas y únicas para el día a día"
+   - Botón redondeado terracota #d1774c con texto blanco: "Ver colección"
+   - Decoración: formas abstractas o puntos suaves en #d1774c muy transparente,
+     nada recargado. Sin fotos de stock genéricas.
+
+3. SECCIÓN "Lo nuevo 🌸" (novedades)
+   - Título centrado en DM Serif Display
+   - Grid de 4 tarjetas de producto (2 columnas en móvil, 4 en desktop)
+   - Cada tarjeta:
+     · Foto cuadrada con border-radius generoso
+     · Badge "Novedad" en terracota #d1774c si es nuevo, badge marrón si is_on_sale
+     · Nombre del producto en DM Serif Display color #764b36
+     · Precio en #d1774c
+     · Icono corazón en esquina superior derecha (toggle favorito)
+   - Botón "Ver todo el catálogo" centrado debajo, estilo outline marrón #764b36
+
+4. SECCIÓN "Sobre nosotras"
+   - Fondo #d1774c al 15% de opacidad (terracota muy suave)
+   - Imagen a la izquierda, texto a la derecha (invertido en móvil)
+   - Título: "Hola, somos MarfilFresa"
+   - Texto placeholder corto y cercano
+
+5. SECCIÓN CONTACTO / WHATSAPP
+   - Fondo #efe7dd
+   - Título: "¿Tienes alguna pregunta?"
+   - Botón grande verde WhatsApp con icono
+   - Texto pequeño debajo con el número (placeholder)
+
+6. FOOTER
+   - Fondo #764b36 (marrón oscuro)
+   - Texto en #efe7dd (crema)
+   - Logo "MarfilFresa 🍓" a la izquierda
+   - Links rápidos en el centro
+   - Iconos de redes sociales a la derecha (Instagram, TikTok, WhatsApp)
+   - Copyright abajo centrado en texto muy pequeño
+
+────────────────────────────────────────
+STACK Y REQUISITOS TÉCNICOS
+────────────────────────────────────────
+- Next.js 14 con App Router
+- TypeScript
+- Tailwind CSS
+- Componentes React funcionales
+- Totalmente responsive (mobile-first)
+- Sin librerías de componentes externas (solo Tailwind)
+- Las tarjetas de producto son componentes separados y reutilizables
+- Los datos de productos son props del componente (mock data para el ejemplo)
