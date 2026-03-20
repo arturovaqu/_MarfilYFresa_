@@ -8,7 +8,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { FilterDrawer } from "@/components/filter-drawer"
 import { useShop } from "@/context/shop-context"
-import { createSupabaseBrowserClient } from "@/lib/supabase"
+import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
 
 const CATEGORIES = ["Todos", "anillos", "collares", "pulseras", "pendientes", "bolsos", "sudaderas", "otros"]
 

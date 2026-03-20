@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Trash2, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { createSupabaseBrowserClient } from "@/lib/supabase"
+import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
 
 export function DeleteProductButton({ productId }: { productId: string }) {
   const [loading, setLoading] = useState(false)

@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { Heart, ShoppingBag, Trash2 } from "lucide-react"
 import { useShop } from "@/context/shop-context"
-import { createSupabaseBrowserClient } from "@/lib/supabase"
+import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
 import { useRouter } from "next/navigation"
 
 interface WishlistItem {

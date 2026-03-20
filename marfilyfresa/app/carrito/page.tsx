@@ -6,7 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowLeft, Loader2, CheckCircle } from "lucide-react"
 import { useShop } from "@/context/shop-context"
-import { createSupabaseBrowserClient } from "@/lib/supabase"
+import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 

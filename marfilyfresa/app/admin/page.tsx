@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "@/lib/supabase"
+import { createSupabaseServerClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Package, ShoppingBag, Users, Heart, Instagram, BarChart3 } from "lucide-react"

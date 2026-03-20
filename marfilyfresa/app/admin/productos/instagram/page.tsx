@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, Loader2, Check, Instagram, AlertCircle } from "lucide-react"
-import { createSupabaseBrowserClient } from "@/lib/supabase"
+import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
 import { useRouter } from "next/navigation"
 
 const CATEGORIES = ["anillos", "collares", "pulseras", "pendientes", "bolsos", "sudaderas", "otros"]

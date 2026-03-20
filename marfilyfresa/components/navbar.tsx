@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Heart, ShoppingBag, Menu, X, Instagram, MessageCircle, LogOut, User } from "lucide-react"
 import { useShop } from "@/context/shop-context"
-import { createSupabaseBrowserClient } from "@/lib/supabase"
+import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
 import { CartDrawer } from "@/components/cart-drawer"
 
 export function Navbar() {
