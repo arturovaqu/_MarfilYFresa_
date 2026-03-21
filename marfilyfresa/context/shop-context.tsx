@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
-import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
+import { createSupabaseBrowserClient } from "@/lib/supabase"
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

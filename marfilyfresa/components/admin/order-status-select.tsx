@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
+import { createSupabaseBrowserClient } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
 const STATUSES = [

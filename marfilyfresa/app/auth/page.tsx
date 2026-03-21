@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
-import { createSupabaseBrowserClient } import { createSupabaseServerClient } from "@/lib/supabase-server"
+import { createSupabaseBrowserClient } from "@/lib/supabase"
 
 export default function AuthPage() {
   const [mode, setMode] = useState<"login" | "register">("login")
