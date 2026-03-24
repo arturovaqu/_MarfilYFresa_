@@ -134,8 +134,8 @@ export default function CatalogoPage() {
           </button>
         </div>
 
-        {/* Category pills */}
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
+        {/* Category pills + price slider (single scrollable row) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-8 scrollbar-none">
           <button
             onClick={() => setActiveCategory("Todos")}
             className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all ${
@@ -159,30 +159,23 @@ export default function CatalogoPage() {
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
             </button>
           ))}
-        </div>
 
-        {/* Price range slider */}
-        {!loading && storeMaxPrice > 0 && (
-          <div className="mb-8 bg-white rounded-2xl px-5 py-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-text-main">Precio máximo</span>
-              <span className="text-sm font-medium text-terracota">{maxPriceFilter} €</span>
+          {/* Divider + inline price slider */}
+          {!loading && storeMaxPrice > 0 && (
+            <div className="flex-shrink-0 flex items-center gap-2 border-l border-brown/20 pl-3">
+              <span className="text-xs text-text-soft whitespace-nowrap">hasta {maxPriceFilter} €</span>
+              <input
+                type="range"
+                min={0}
+                max={storeMaxPrice}
+                step={1}
+                value={maxPriceFilter}
+                onChange={(e) => setMaxPriceFilter(Number(e.target.value))}
+                className="w-36 accent-terracota"
+              />
             </div>
-            <input
-              type="range"
-              min={0}
-              max={storeMaxPrice}
-              step={1}
-              value={maxPriceFilter}
-              onChange={(e) => setMaxPriceFilter(Number(e.target.value))}
-              className="w-full accent-terracota"
-            />
-            <div className="flex justify-between text-xs text-text-soft mt-1">
-              <span>0 €</span>
-              <span>{storeMaxPrice} €</span>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Products grid */}
         {loading ? (
