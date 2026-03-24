@@ -3,8 +3,6 @@
 import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
 import { NewProducts } from "@/components/new-products"
-import { AboutUs } from "@/components/about-us"
-import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 
 interface Product {
@@ -18,7 +16,6 @@ interface Product {
 }
 
 export function HomeClient({ products }: { products: Product[] }) {
-  // Transform Supabase product shape to component shape
   const formattedProducts = products.map((p) => ({
     id: p.id,
     name: p.name,
@@ -34,8 +31,6 @@ export function HomeClient({ products }: { products: Product[] }) {
       <Navbar />
       <Hero />
       <NewProducts products={formattedProducts} />
-      <AboutUs />
-      <Contact />
       <Footer />
     </main>
   )

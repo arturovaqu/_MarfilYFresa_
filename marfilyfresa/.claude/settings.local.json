@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npm ls:*)",
+      "Bash(grep -E '\\\\.tsx?$|^d')",
+      "Bash(dir \"D:\\\\PERSONAL\\\\Dinero\\\\PG_WEB\\\\MarfilYFresa\\\\marfilyfresa\\\\app\\\\admin\" /b)",
+      "Bash(find D:PERSONALDineroPG_WEBMarfilYFresamarfilyfresaappadmin -name *.tsx -o -name *.ts)",
+      "Bash(find D:PERSONALDineroPG_WEBMarfilYFresamarfilyfresacomponentsadmin -name *.tsx)"
+    ]
+  }
+}

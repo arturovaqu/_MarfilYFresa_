@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Heart, ShoppingBag, Menu, X, Instagram, MessageCircle, LogOut, User } from "lucide-react"
+import { Heart, ShoppingBag, Menu, X, Instagram, MessageCircle, User, ChevronDown } from "lucide-react"
 import { useShop } from "@/context/shop-context"
 import { createSupabaseBrowserClient } from "@/lib/supabase"
 import { CartDrawer } from "@/components/cart-drawer"
@@ -11,23 +11,37 @@ import { CartDrawer } from "@/components/cart-drawer"
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [user, setUser] = useState<{ email: string } | null>(null)
   const { favoritesCount, cartCount } = useShop()
   const router = useRouter()
   const supabase = createSupabaseBrowserClient()
+  const profileRef = useRef<HTMLDivElement>(null)
 
-  // Check auth on mount
-  useState(() => {
+  useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user ? { email: data.user.email ?? "" } : null)
     })
-    supabase.auth.onAuthStateChange((_, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ? { email: session.user.email ?? "" } : null)
     })
-  })
+    return () => subscription.unsubscribe()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setIsProfileOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   async function handleLogout() {
+    setIsProfileOpen(false)
     await supabase.auth.signOut()
+    router.push("/")
     router.refresh()
   }
 
@@ -44,6 +58,7 @@ export function Navbar() {
         <nav className="bg-cream shadow-sm border-b border-brown/10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
+
               {/* Logo */}
               <Link href="/" className="flex items-center gap-1">
                 <span className="font-serif text-xl text-text-main">MarfilFresa</span>
@@ -65,19 +80,24 @@ export function Navbar() {
 
               {/* Right side icons */}
               <div className="flex items-center gap-1">
+                {/* Instagram */}
                 <a
                   href="https://instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hidden sm:block p-2 text-text-main transition-colors hover:text-terracota"
+                  aria-label="Instagram"
                 >
                   <Instagram className="h-5 w-5" />
                 </a>
+
+                {/* WhatsApp */}
                 <a
                   href="https://wa.me/34612345678"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hidden sm:block p-2 text-text-main transition-colors hover:text-terracota"
+                  aria-label="WhatsApp"
                 >
                   <MessageCircle className="h-5 w-5" />
                 </a>
@@ -110,15 +130,41 @@ export function Navbar() {
                   )}
                 </button>
 
-                {/* Auth */}
+                {/* Profile */}
                 {user ? (
-                  <button
-                    onClick={handleLogout}
-                    className="p-2 text-text-main transition-colors hover:text-terracota"
-                    title={`Cerrar sesión (${user.email})`}
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </button>
+                  <div className="relative" ref={profileRef}>
+                    <button
+                      onClick={() => setIsProfileOpen(!isProfileOpen)}
+                      className="flex items-center gap-1 p-2 text-text-main transition-colors hover:text-terracota"
+                      aria-label="Mi cuenta"
+                    >
+                      <User className="h-5 w-5" />
+                      <ChevronDown className={`h-3 w-3 transition-transform ${isProfileOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {isProfileOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-48 rounded-2xl bg-white shadow-lg border border-brown/10 overflow-hidden z-50">
+                        <div className="px-4 py-2 border-b border-brown/10">
+                          <p className="text-xs text-text-soft truncate">{user.email}</p>
+                        </div>
+                        <Link
+                          href="/favoritos"
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex items-center gap-2 px-4 py-3 text-sm text-text-main hover:bg-terracota/10 transition-colors"
+                        >
+                          <Heart className="h-4 w-4 text-terracota" />
+                          Mi cuenta
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="flex w-full items-center gap-2 px-4 py-3 text-sm text-text-main hover:bg-terracota/10 transition-colors"
+                        >
+                          <X className="h-4 w-4 text-text-soft" />
+                          Cerrar sesión
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <Link
                     href="/auth"
@@ -129,10 +175,11 @@ export function Navbar() {
                   </Link>
                 )}
 
-                {/* Mobile Menu */}
+                {/* Mobile menu toggle */}
                 <button
                   className="p-2 text-text-main md:hidden"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-label="Menú"
                 >
                   {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </button>
@@ -154,6 +201,33 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
+                <div className="pt-2 border-t border-brown/10 mt-2">
+                  {user ? (
+                    <>
+                      <Link
+                        href="/favoritos"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="block rounded-lg px-3 py-2 text-base font-medium text-text-main hover:bg-terracota/10 transition-colors"
+                      >
+                        Mi cuenta
+                      </Link>
+                      <button
+                        onClick={() => { setIsMenuOpen(false); handleLogout() }}
+                        className="block w-full text-left rounded-lg px-3 py-2 text-base font-medium text-text-main hover:bg-terracota/10 transition-colors"
+                      >
+                        Cerrar sesión
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href="/auth"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block rounded-lg px-3 py-2 text-base font-medium text-terracota hover:bg-terracota/10 transition-colors"
+                    >
+                      Iniciar sesión
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           )}

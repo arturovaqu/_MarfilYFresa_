@@ -2,7 +2,7 @@ import Image from "next/image"
 
 export function AboutUs() {
   return (
-    <section id="nosotros" className="py-20" style={{ backgroundColor: "color-mix(in srgb, #d1774c 12%, #efe7dd 88%)" }}>
+    <section id="nosotros" className="py-20 bg-terracota/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
           {/* Image */}

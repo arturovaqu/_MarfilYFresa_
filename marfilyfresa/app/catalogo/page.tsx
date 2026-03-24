@@ -149,7 +149,7 @@ export default function CatalogoPage() {
                     </span>
                   )}
                   {product.is_on_sale && !product.is_featured && (
-                    <span className="absolute left-3 top-3 rounded-full bg-brown px-3 py-1 text-xs font-medium text-white">
+                    <span className="absolute left-3 top-3 rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
                       Oferta
                     </span>
                   )}

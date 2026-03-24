@@ -1,19 +1,12 @@
 import { createSupabaseServerClient } from "@/lib/supabase-server"
-import { redirect, notFound } from "next/navigation"
+import { notFound } from "next/navigation"
 import { ProductForm } from "@/components/admin/product-form"
 
-export default async function EditProductoPage({ params }: { params: { id: string } }) {
+export default async function EditProductoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/auth")
 
-const { data: profile } = await supabase
-  .from("profiles")
-  .select("role")
-  .eq("id", user.id)
-  .single() as { data: { role: string | null } | null }
-
-  const { data: product } = await supabase.from("products").select("*").eq("id", params.id).single()
+  const { data: product } = await supabase.from("products").select("*").eq("id", id).single()
   if (!product) notFound()
 
   return <ProductForm initialData={product} />

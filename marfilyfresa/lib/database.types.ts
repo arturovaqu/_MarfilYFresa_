@@ -53,6 +53,7 @@ export interface Database {
           is_featured?: boolean | null
           is_on_sale?: boolean | null
         }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -67,6 +68,7 @@ export interface Database {
           id?: string
           role?: string | null
         }
+        Relationships: []
       }
       wishlist: {
         Row: {
@@ -90,29 +92,54 @@ export interface Database {
           product_name?: string
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "wishlist_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       orders: {
         Row: {
           id: string
+          order_number: string | null
           user_id: string
           total_amount: number
           status: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          customer_address: string | null
+          notes: string | null
           created_at: string
         }
         Insert: {
           id?: string
+          order_number?: string | null
           user_id: string
           total_amount: number
           status?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          customer_address?: string | null
+          notes?: string | null
           created_at?: string
         }
         Update: {
           id?: string
+          order_number?: string | null
           user_id?: string
           total_amount?: number
           status?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          customer_address?: string | null
+          notes?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -136,6 +163,52 @@ export interface Database {
           quantity?: number
           price_at_time?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      contacts: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          subject: string | null
+          message: string
+          read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          subject?: string | null
+          message: string
+          read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          subject?: string | null
+          message?: string
+          read?: boolean
+          created_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

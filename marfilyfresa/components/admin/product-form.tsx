@@ -108,18 +108,20 @@ export function ProductForm({ initialData }: ProductFormProps) {
   }
 
   return (
-    <div className="min-h-screen bg-cream">
-      <header className="bg-brown text-cream px-6 py-4 flex items-center justify-between">
-        <Link href="/admin/productos" className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors">
+    <div className="px-6 py-8 max-w-2xl mx-auto">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-text-soft mb-6">
+        <Link href="/admin/productos" className="flex items-center gap-1 hover:text-text-main transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Productos
         </Link>
-        <span className="font-serif text-lg">{isEdit ? "Editar producto" : "Nuevo producto"}</span>
-        <div />
-      </header>
+        <span>/</span>
+        <span className="text-text-main">{isEdit ? "Editar" : "Nuevo producto"}</span>
+      </div>
 
-      <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <h1 className="font-serif text-2xl text-text-main mb-6">{isEdit ? "Editar producto" : "Nuevo producto"}</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
 
           {/* Image upload */}
           <div className="rounded-2xl bg-white p-6">
@@ -280,7 +282,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
             </button>
           </div>
         </form>
-      </main>
     </div>
   )
 }

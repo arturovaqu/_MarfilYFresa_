@@ -2,129 +2,148 @@
 
 ## Descripción
 Tienda online de joyería colorida y divertida, con novedades ocasionales
-de bolsos y sudaderas. Sin carrito ni pagos online. Los usuarios pueden
-guardar productos en su wishlist y contactar por WhatsApp.
+de bolsos y sudaderas. Sin pagos online — los pedidos funcionan como
+reservas (el cliente pide, la dueña confirma y gestiona el cobro manualmente).
 
 ## Stack
-- Next.js 14 con App Router y TypeScript
+- Next.js 16 con App Router y TypeScript estricto
 - Supabase (base de datos, auth y storage de imágenes)
-- Tailwind CSS para estilos
-- Vercel para deployment
-- Resend para emails del informe mensual
+- Tailwind CSS v4 para estilos
+- Vercel para deployment (con cron jobs)
+- Resend para emails (pedidos, contacto, informe mensual)
 - Claude API para análisis de posts de Instagram
 
+## Clientes de Supabase — MUY IMPORTANTE
+Hay DOS archivos de cliente, nunca mezclarlos:
+- /lib/supabase-server.ts → SOLO para Server Components y Route Handlers
+  Exporta: createSupabaseServerClient(), createSupabaseAdminClient()
+- /lib/supabase.ts → SOLO para componentes con "use client"
+  Exporta: createSupabaseBrowserClient()
+
 ## Identidad visual
-- Fondo principal: #efe7dd  ← crema cálido, color base de toda la web
-- Terracota:       #d1774c  ← botones, badges, acentos principales
-- Marrón:          #764b36  ← hover, bordes, texto oscuro, footer
-- Blanco:          #FFFFFF  ← tarjetas y formularios
-- Texto principal: #764b36  ← el marrón como color de texto principal
-- Texto suave:     #a07860  ← subtítulos y placeholders (marrón suave)
+- Fondo principal: #efe7dd
+- Terracota:       #d1774c  (botones, badges, acentos)
+- Marrón:          #764b36  (hover, bordes, texto, footer, admin header)
+- Blanco:          #FFFFFF  (tarjetas y formularios)
+- Texto principal: #764b36
+- Texto suave:     #a07860
 - Fuente títulos:  DM Serif Display (Google Fonts)
 - Fuente cuerpo:   DM Sans (Google Fonts)
-- Estilo: clean girl, minimalista cálido, bonito y cercano
+- Estilo: clean girl, minimalista cálido, joyería colorida y divertida
 
 ## Estructura de carpetas
-- /app                        → páginas (Next.js App Router)
-  - /app/catalogo             → catálogo de productos con filtros
-  - /app/favoritos            → wishlist del usuario (requiere login)
-  - /app/auth                 → login y registro
-  - /app/nosotros             → página sobre nosotros
-  - /app/contacto             → página de contacto con WhatsApp
-  - /app/admin                → panel de administración (solo admin)
-  - /app/api/monthly-report   → endpoint del informe mensual (cron)
-  - /app/api/analyze-instagram → endpoint para analizar posts de Instagram
-- /components                 → componentes reutilizables
-- /lib                        → cliente de Supabase, tipos y utilidades
-- /public                     → imágenes estáticas y logo
+- /app/page.tsx               → Inicio: Hero + novedades (is_featured=true)
+- /app/catalogo/page.tsx      → Catálogo con filtros
+- /app/nosotros/page.tsx      → Página sobre la marca
+- /app/contacto/page.tsx      → Formulario de contacto
+- /app/favoritos/page.tsx     → Wishlist (requiere login)
+- /app/carrito/page.tsx       → Checkout del pedido
+- /app/auth/page.tsx          → Login y registro
+- /app/admin/page.tsx         → Dashboard admin
+- /app/admin/productos/       → CRUD de productos
+- /app/admin/pedidos/         → Gestión de pedidos
+- /app/admin/usuarios/        → Lista de usuarios
+- /app/admin/contactos/       → Mensajes de contacto
+- /app/api/monthly-report/    → Cron informe mensual
+- /app/api/analyze-instagram/ → Análisis con Claude
+- /app/api/notify-order/      → Email nuevo pedido
+- /app/api/contact/           → Guardar contacto + email
+- /components/navbar.tsx      → Navbar con todos los iconos
+- /components/cart-drawer.tsx → Drawer lateral del carrito
+- /components/admin/          → Componentes del panel admin
+- /context/shop-context.tsx   → Estado global carrito + favoritos
+- /lib/supabase.ts            → Cliente browser
+- /lib/supabase-server.ts     → Cliente servidor
+- /lib/database.types.ts      → Tipos de Supabase
+- /lib/types.ts               → Tipos del dominio
 
-## Base de datos (Supabase — tablas existentes)
+## Base de datos (Supabase)
 
 ### products
-| columna      | tipo      | notas                                      |
-|--------------|-----------|--------------------------------------------|
-| id           | uuid      | PK, auto-generado                          |
-| name         | text      | requerido                                  |
-| description  | text      | opcional                                   |
-| price        | numeric   | requerido                                  |
-| image_url    | text      | URL de Supabase Storage                    |
-| stock        | integer   | opcional                                   |
-| created_at   | timestampz| auto                                       |
-| category     | text      | anillos / collares / pulseras / pendientes / bolsos / sudaderas / otros |
-| attributes   | jsonb     | datos extra flexibles (color, material...) |
-| is_featured  | boolean   | aparece en la sección novedades del inicio |
-| is_on_sale   | boolean   | muestra badge de oferta                    |
+- id (uuid PK), name (text), description (text), price (numeric)
+- image_url (text) → Supabase Storage bucket "products"
+- stock (integer) → se descuenta al confirmar pedido
+- category (text): anillos/collares/pulseras/pendientes/bolsos/sudaderas/otros
+- attributes (jsonb), is_featured (boolean), is_on_sale (boolean)
+- created_at (timestampz)
 
 ### profiles
-| columna | tipo | notas                                           |
-|---------|------|-------------------------------------------------|
-| id      | uuid | PK, referencia a auth.users                     |
-| role    | text | 'admin' o 'user' — controla acceso al panel     |
+- id (uuid PK, referencia auth.users), role (text: 'admin' o 'user')
 
 ### wishlist
-| columna      | tipo      | notas                              |
-|--------------|-----------|------------------------------------|
-| id           | uuid      | PK, auto-generado                  |
-| user_id      | uuid      | referencia a profiles.id           |
-| product_id   | uuid      | referencia a products.id (nullable)|
-| product_name | text      | requerido                          |
-| created_at   | timestampz| auto                               |
+- id (uuid PK), user_id (uuid), product_id (uuid nullable)
+- product_name (text), created_at (timestampz)
 
-### orders / order_items
-Tablas existentes para uso futuro. No se usan en esta versión.
+### orders
+- id (uuid PK), order_number (text, formato MF-YYYY-NNNN)
+- user_id (uuid), total_amount (numeric)
+- status (text): pending/confirmed/shipped/delivered/cancelled
+- customer_name (text), customer_phone (text)
+- customer_address (text), notes (text), created_at (timestampz)
 
-## Autenticación y roles
-- Supabase Auth gestiona login/registro
-- Al registrarse, se crea automáticamente una fila en profiles con role = 'user'
-- El panel /admin solo es accesible si profiles.role = 'admin'
-- Para hacer admin a un usuario: cambiar manualmente en Supabase Dashboard
+### order_items
+- id (uuid PK), order_id (uuid), product_id (uuid)
+- quantity (integer), price_at_time (numeric)
 
-## Funcionalidades de la web
+### contacts
+- id (uuid PK), name (text), email (text), subject (text)
+- message (text), read (boolean default false), created_at (timestampz)
 
-### Públicas (sin login)
-- Página de inicio con Hero y sección de novedades (is_featured = true)
-- Catálogo completo con filtros por categoría
-- Detalle de producto
-- Página sobre nosotros
-- Contacto con botón de WhatsApp
+SQL para crear contacts:
+CREATE TABLE contacts (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  email text not null,
+  subject text,
+  message text not null,
+  read boolean default false,
+  created_at timestamp with time zone default now()
+);
+ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 
-### Requieren login
-- Añadir/quitar productos de la wishlist
-- Ver página /favoritos con todos los productos guardados
+## Lógica de pedidos
+1. Carrito en memoria (shop-context)
+2. Al pedir → verificar stock de cada producto
+3. Si no hay stock → error claro al usuario
+4. Si hay stock → generar MF-YYYY-NNNN → crear order + order_items
+5. Descontar stock: UPDATE products SET stock = stock - quantity
+6. Email al cliente + email a ADMIN_EMAIL
 
-### Panel /admin (role = 'admin')
-- Dashboard con estadísticas del mes
-- CRUD completo de productos
-- Subida de imágenes al bucket "products" de Supabase Storage
-- Importar producto desde URL de Instagram:
-  - Pega la URL del post
-  - Claude analiza la imagen y descripción
-  - Extrae nombre, precio, categoría y descripción
-  - El admin revisa y confirma antes de guardar
+## Navbar (todos los iconos funcionales)
+- Logo → /
+- Links: Inicio / Catálogo / Nosotros / Contacto
+- Instagram → nueva pestaña
+- WhatsApp → wa.me/NUMERO nueva pestaña
+- Corazón con contador → /favoritos (requiere login)
+- Carrito con contador → abre CartDrawer
+- Perfil: si logueado → menú (Mi cuenta + Cerrar sesión), si no → /auth
 
-### Informe mensual automático
-- Se ejecuta el día 1 de cada mes a las 9:00 AM (Vercel Cron)
-- Envía email a ADMIN_EMAIL con:
-  - Nuevos usuarios del mes
-  - Productos añadidos a wishlist ese mes
-  - Top 5 productos más wishlisted del mes
-  - Top 5 productos más wishlisted en total
-  - Productos sin ningún favorito
+## Panel Admin (/admin) — solo role = 'admin'
+- /admin → Dashboard con estadísticas
+- /admin/productos → CRUD + importar Instagram
+- /admin/pedidos → ver todos, cambiar estado, detalle
+- /admin/usuarios → ver todos, cambiar rol
+- /admin/contactos → mensajes, marcar leído, badge no leídos
 
-## Variables de entorno necesarias
-Todas están en .env.local (nunca subir a GitHub):
+## Emails via Resend
+- ADMIN_EMAIL = arthur.va.qu@gmail.com
+- Nuevo pedido → email cliente + email admin
+- Nuevo contacto → email a arthur.va.qu@gmail.com + guarda en BD
+- Informe mensual → día 1 de cada mes a las 9:00
+
+## Variables de entorno (.env.local)
 - NEXT_PUBLIC_SUPABASE_URL
 - NEXT_PUBLIC_SUPABASE_ANON_KEY
 - SUPABASE_SERVICE_ROLE_KEY
 - ANTHROPIC_API_KEY
 - RESEND_API_KEY
-- ADMIN_EMAIL
+- ADMIN_EMAIL=arthur.va.qu@gmail.com
 - CRON_SECRET
+- NEXT_PUBLIC_SITE_URL
 
-## Reglas importantes
-- NUNCA hardcodear claves de API en el código
-- Usar siempre TypeScript con tipos definidos
-- Los componentes de cliente llevan "use client" al principio
-- Los componentes de servidor hacen fetch directo a Supabase
-- Las imágenes de productos se suben al bucket "products" de Supabase Storage
-- Al crear un producto desde Instagram, la imagen se descarga y se re-sube a Storage
+## Reglas de código
+- NUNCA hardcodear claves de API
+- TypeScript estricto con tipos siempre definidos
+- "use client" solo cuando sea necesario
+- Importar de @/lib/supabase-server en servidor, @/lib/supabase en cliente
+- Al terminar → npm run build y corregir TODOS los errores antes de acabar

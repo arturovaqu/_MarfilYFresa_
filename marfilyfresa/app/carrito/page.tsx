@@ -18,6 +18,7 @@ export default function CarritoPage() {
   const [notes, setNotes] = useState("")
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [orderNumber, setOrderNumber] = useState("")
   const [error, setError] = useState("")
 
   const router = useRouter()
@@ -29,47 +30,19 @@ export default function CarritoPage() {
     setLoading(true)
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) {
         router.push("/auth?redirect=carrito")
         return
       }
 
-      // Create order in Supabase
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user.id,
-          total_amount: cartTotal,
-          status: "pending",
-        })
-        .select()
-        .single()
-
-      if (orderError) throw orderError
-
-      // Create order items
-      const orderItems = cartItems.map((item) => ({
-        order_id: order.id,
-        product_id: item.id,
-        quantity: item.quantity,
-        price_at_time: item.price,
-      }))
-
-      const { error: itemsError } = await supabase
-        .from("order_items")
-        .insert(orderItems)
-
-      if (itemsError) throw itemsError
-
-      // Send notification email to admin via API
-      await fetch("/api/notify-order", {
+      const res = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderId: order.id,
           customerName: name,
-          customerEmail: user.email,
           customerPhone: phone,
           customerAddress: address,
           notes,
@@ -78,11 +51,18 @@ export default function CarritoPage() {
         }),
       })
 
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error ?? "Hubo un problema al enviar el pedido. Inténtalo de nuevo.")
+        return
+      }
+
       clearCart()
+      setOrderNumber(data.orderNumber)
       setSuccess(true)
-    } catch (err) {
+    } catch {
       setError("Hubo un problema al enviar el pedido. Inténtalo de nuevo.")
-      console.error(err)
     } finally {
       setLoading(false)
     }
@@ -94,9 +74,13 @@ export default function CarritoPage() {
         <Navbar />
         <div className="flex flex-col items-center justify-center py-24 px-4 text-center">
           <CheckCircle className="h-20 w-20 text-terracota mb-6" />
-          <h1 className="font-serif text-3xl text-text-main mb-3">¡Pedido enviado! 🍓</h1>
+          <h1 className="font-serif text-3xl text-text-main mb-2">¡Pedido enviado! 🍓</h1>
+          {orderNumber && (
+            <p className="text-sm font-mono text-text-soft mb-3">{orderNumber}</p>
+          )}
           <p className="text-text-soft max-w-md mb-8">
-            Hemos recibido tu pedido. Te escribiremos pronto para confirmar los detalles y el envío.
+            Hemos recibido tu pedido y te enviamos un email de confirmación. Nos pondremos en
+            contacto contigo pronto para confirmar los detalles y el envío.
           </p>
           <Link
             href="/"
@@ -170,7 +154,9 @@ export default function CarritoPage() {
             <h2 className="font-serif text-lg text-text-main mb-2">Tus datos</h2>
 
             <div>
-              <label className="block text-sm font-medium text-text-main mb-1">Nombre completo *</label>
+              <label className="block text-sm font-medium text-text-main mb-1">
+                Nombre completo *
+              </label>
               <input
                 type="text"
                 value={name}
@@ -182,7 +168,9 @@ export default function CarritoPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-main mb-1">Teléfono / WhatsApp *</label>
+              <label className="block text-sm font-medium text-text-main mb-1">
+                Teléfono / WhatsApp *
+              </label>
               <input
                 type="tel"
                 value={phone}
@@ -194,7 +182,9 @@ export default function CarritoPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-main mb-1">Dirección de envío *</label>
+              <label className="block text-sm font-medium text-text-main mb-1">
+                Dirección de envío *
+              </label>
               <textarea
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -207,7 +197,8 @@ export default function CarritoPage() {
 
             <div>
               <label className="block text-sm font-medium text-text-main mb-1">
-                Notas adicionales <span className="text-text-soft font-normal">(opcional)</span>
+                Notas adicionales{" "}
+                <span className="text-text-soft font-normal">(opcional)</span>
               </label>
               <textarea
                 value={notes}

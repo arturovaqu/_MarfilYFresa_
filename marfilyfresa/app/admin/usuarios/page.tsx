@@ -1,62 +1,49 @@
-import { createSupabaseServerClient } from "@/lib/supabase-server"
-import { redirect } from "next/navigation"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { createSupabaseAdminClient } from "@/lib/supabase-server"
+import { RoleSelect } from "@/components/admin/role-select"
 
 export default async function AdminUsuariosPage() {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/auth")
+  const admin = createSupabaseAdminClient()
 
-const { data: profile } = await supabase
-  .from("profiles")
-  .select("role")
-  .eq("id", user.id)
-  .single() as { data: { role: string | null } | null }
+  const {
+    data: { users },
+  } = await admin.auth.admin.listUsers()
 
-  // Get users via admin API
-  const { data: { users } } = await supabase.auth.admin.listUsers()
+  // Profiles for role info
+  const { data: profiles } = await admin.from("profiles").select("id, role")
 
-  // Get wishlist counts per user
-  const { data: wishlistCounts } = await supabase
-    .from("wishlist")
-    .select("user_id")
-
+  // Wishlist counts per user
+  const { data: wishlistCounts } = await admin.from("wishlist").select("user_id")
   const wishlistByUser: Record<string, number> = {}
   wishlistCounts?.forEach((w) => {
     wishlistByUser[w.user_id] = (wishlistByUser[w.user_id] ?? 0) + 1
   })
 
-  // Get order counts per user
-  const { data: orderCounts } = await supabase
-    .from("orders")
-    .select("user_id")
-
+  // Order counts per user
+  const { data: orderCounts } = await admin.from("orders").select("user_id")
   const ordersByUser: Record<string, number> = {}
   orderCounts?.forEach((o) => {
     ordersByUser[o.user_id] = (ordersByUser[o.user_id] ?? 0) + 1
   })
 
+  const profileMap: Record<string, string> = {}
+  profiles?.forEach((p) => {
+    profileMap[p.id] = p.role ?? "user"
+  })
+
   return (
-    <div className="min-h-screen bg-cream">
-      <header className="bg-brown text-cream px-6 py-4 flex items-center justify-between">
-        <Link href="/admin" className="flex items-center gap-2 text-cream/70 hover:text-cream transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-          Admin
-        </Link>
-        <span className="font-serif text-lg">Usuarias</span>
-        <div />
-      </header>
+    <div className="px-6 py-8 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="font-serif text-2xl text-text-main">Usuarios</h1>
+        <p className="text-text-soft text-sm">{users.length} registrados</p>
+      </div>
 
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        <p className="text-text-soft text-sm mb-6">{users.length} usuarias registradas</p>
-
-        <div className="rounded-2xl bg-white overflow-hidden">
+      <div className="rounded-2xl bg-white overflow-hidden">
+        <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-cream/50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-soft uppercase">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-soft uppercase">Registrada</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-soft uppercase">Registrado</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-soft uppercase">Favoritos</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-soft uppercase">Pedidos</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-soft uppercase">Rol</th>
@@ -69,27 +56,17 @@ const { data: profile } = await supabase
                   <td className="px-6 py-4 text-sm text-text-soft">
                     {new Date(u.created_at).toLocaleDateString("es-ES")}
                   </td>
-                  <td className="px-6 py-4 text-sm text-text-soft">
-                    {wishlistByUser[u.id] ?? 0}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-text-soft">
-                    {ordersByUser[u.id] ?? 0}
-                  </td>
+                  <td className="px-6 py-4 text-sm text-text-soft">{wishlistByUser[u.id] ?? 0}</td>
+                  <td className="px-6 py-4 text-sm text-text-soft">{ordersByUser[u.id] ?? 0}</td>
                   <td className="px-6 py-4">
-                    <span className={`rounded-full px-3 py-1 text-xs font-medium ${
-                      u.email === process.env.ADMIN_EMAIL
-                        ? "bg-terracota/10 text-terracota"
-                        : "bg-brown/10 text-brown"
-                    }`}>
-                      {u.email === process.env.ADMIN_EMAIL ? "Admin" : "Usuaria"}
-                    </span>
+                    <RoleSelect userId={u.id} currentRole={profileMap[u.id] ?? "user"} />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </main>
+      </div>
     </div>
   )
 }

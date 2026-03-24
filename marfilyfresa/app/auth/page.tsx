@@ -1,12 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { createSupabaseBrowserClient } from "@/lib/supabase"
 
 export default function AuthPage() {
+  return (
+    <Suspense>
+      <AuthContent />
+    </Suspense>
+  )
+}
+
+function AuthContent() {
   const [mode, setMode] = useState<"login" | "register">("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
