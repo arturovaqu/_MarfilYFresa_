@@ -37,7 +37,7 @@ export default async function AdminPage() {
     { label: "Productos", value: totalProducts ?? 0, icon: Package, href: "/admin/productos" },
     { label: "Pedidos", value: totalOrders ?? 0, icon: ShoppingBag, href: "/admin/pedidos", badge: pendingOrders ?? 0 },
     { label: "Usuarios", value: totalUsers ?? 0, icon: Users, href: "/admin/usuarios" },
-    { label: "Favoritos", value: totalWishlist ?? 0, icon: Heart, href: "#" },
+    { label: "Favoritos", value: totalWishlist ?? 0, icon: Heart, href: "/admin/favoritos" },
   ]
 
   const statusLabels: Record<string, string> = {
