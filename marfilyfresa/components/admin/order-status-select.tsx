@@ -20,7 +20,13 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-red-100 text-red-700 border-red-200",
 }
 
-export function OrderStatusSelect({ orderId, currentStatus }: { orderId: string; currentStatus: string }) {
+export function OrderStatusSelect({
+  orderId,
+  currentStatus,
+}: {
+  orderId: string
+  currentStatus: string
+}) {
   const [status, setStatus] = useState(currentStatus)
   const supabase = createSupabaseBrowserClient()
   const router = useRouter()
@@ -28,6 +34,16 @@ export function OrderStatusSelect({ orderId, currentStatus }: { orderId: string;
   async function handleChange(newStatus: string) {
     setStatus(newStatus)
     await supabase.from("orders").update({ status: newStatus }).eq("id", orderId)
+
+    // Email al cliente cuando el pedido pasa a "enviado"
+    if (newStatus === "shipped") {
+      await fetch("/api/notify-shipping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      })
+    }
+
     router.refresh()
   }
 
@@ -38,7 +54,9 @@ export function OrderStatusSelect({ orderId, currentStatus }: { orderId: string;
       className={`rounded-full border px-4 py-1.5 text-sm font-medium focus:outline-none cursor-pointer ${statusColors[status] ?? "bg-gray-100 text-gray-700 border-gray-200"}`}
     >
       {STATUSES.map((s) => (
-        <option key={s.value} value={s.value}>{s.label}</option>
+        <option key={s.value} value={s.value}>
+          {s.label}
+        </option>
       ))}
     </select>
   )

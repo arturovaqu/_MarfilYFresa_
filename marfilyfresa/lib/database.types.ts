@@ -110,6 +110,7 @@ export interface Database {
           total_amount: number
           status: string | null
           customer_name: string | null
+          customer_email: string | null
           customer_phone: string | null
           customer_address: string | null
           notes: string | null
@@ -122,6 +123,7 @@ export interface Database {
           total_amount: number
           status?: string | null
           customer_name?: string | null
+          customer_email?: string | null
           customer_phone?: string | null
           customer_address?: string | null
           notes?: string | null
@@ -134,6 +136,7 @@ export interface Database {
           total_amount?: number
           status?: string | null
           customer_name?: string | null
+          customer_email?: string | null
           customer_phone?: string | null
           customer_address?: string | null
           notes?: string | null

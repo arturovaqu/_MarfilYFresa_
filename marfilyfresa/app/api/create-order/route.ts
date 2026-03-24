@@ -104,6 +104,7 @@ export async function POST(req: NextRequest) {
         total_amount: total,
         status: "pending",
         customer_name: customerName,
+        customer_email: user.email ?? null,
         customer_phone: customerPhone,
         customer_address: customerAddress,
         notes: notes || null,

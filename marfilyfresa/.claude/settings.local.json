@@ -6,7 +6,10 @@
       "Bash(grep -E '\\\\.tsx?$|^d')",
       "Bash(dir \"D:\\\\PERSONAL\\\\Dinero\\\\PG_WEB\\\\MarfilYFresa\\\\marfilyfresa\\\\app\\\\admin\" /b)",
       "Bash(find D:PERSONALDineroPG_WEBMarfilYFresamarfilyfresaappadmin -name *.tsx -o -name *.ts)",
-      "Bash(find D:PERSONALDineroPG_WEBMarfilYFresamarfilyfresacomponentsadmin -name *.tsx)"
+      "Bash(find D:PERSONALDineroPG_WEBMarfilYFresamarfilyfresacomponentsadmin -name *.tsx)",
+      "mcp__claude_ai_Supabase__list_projects",
+      "mcp__claude_ai_Supabase__list_tables",
+      "mcp__claude_ai_Supabase__apply_migration"
     ]
   }
 }
