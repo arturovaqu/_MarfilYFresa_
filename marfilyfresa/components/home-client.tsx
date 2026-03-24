@@ -8,6 +8,7 @@ import { Footer } from "@/components/footer"
 interface Product {
   id: string
   name: string
+  description: string | null
   price: number
   image_url: string | null
   is_featured: boolean | null
@@ -19,6 +20,7 @@ export function HomeClient({ products }: { products: Product[] }) {
   const formattedProducts = products.map((p) => ({
     id: p.id,
     name: p.name,
+    description: p.description,
     price: Number(p.price),
     image: p.image_url ?? "/placeholder.jpg",
     isNew: p.is_featured ?? false,
