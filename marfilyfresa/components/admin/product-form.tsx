@@ -7,6 +7,7 @@ import { ArrowLeft, Upload, Loader2, X } from "lucide-react"
 import { createSupabaseBrowserClient } from "@/lib/supabase"
 
 const CATEGORIES = ["anillos", "collares", "pulseras", "pendientes", "bolsos", "sudaderas", "otros"]
+const KNOWN_CATEGORIES = new Set(CATEGORIES)
 
 interface ProductFormProps {
   initialData?: {
@@ -28,7 +29,11 @@ export function ProductForm({ initialData }: ProductFormProps) {
   const [name, setName] = useState(initialData?.name ?? "")
   const [description, setDescription] = useState(initialData?.description ?? "")
   const [price, setPrice] = useState(initialData?.price?.toString() ?? "")
-  const [category, setCategory] = useState(initialData?.category ?? "")
+  const initCategory = initialData?.category ?? ""
+  const initIsCustom = initCategory !== "" && !KNOWN_CATEGORIES.has(initCategory)
+  const [category, setCategory] = useState(initIsCustom ? "" : initCategory)
+  const [customCategory, setCustomCategory] = useState(initIsCustom ? initCategory : "")
+  const [showCustomCategory, setShowCustomCategory] = useState(initIsCustom)
   const [stock, setStock] = useState(initialData?.stock?.toString() ?? "")
   const [isFeatured, setIsFeatured] = useState(initialData?.is_featured ?? false)
   const [isOnSale, setIsOnSale] = useState(initialData?.is_on_sale ?? false)
@@ -76,11 +81,13 @@ export function ProductForm({ initialData }: ProductFormProps) {
         finalImageUrl = await uploadImage(imageFile)
       }
 
+      const finalCategory = showCustomCategory ? (customCategory.trim() || null) : (category || null)
+
       const productData = {
         name,
         description: description || null,
         price: parseFloat(price),
-        category: category || null,
+        category: finalCategory,
         stock: stock ? parseInt(stock) : null,
         is_featured: isFeatured,
         is_on_sale: isOnSale,
@@ -222,15 +229,35 @@ export function ProductForm({ initialData }: ProductFormProps) {
             <div>
               <label className="block text-sm font-medium text-text-main mb-1">Categoría</label>
               <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                value={showCustomCategory ? "__custom__" : category}
+                onChange={(e) => {
+                  if (e.target.value === "__custom__") {
+                    setShowCustomCategory(true)
+                    setCategory("")
+                  } else {
+                    setShowCustomCategory(false)
+                    setCustomCategory("")
+                    setCategory(e.target.value)
+                  }
+                }}
                 className="w-full rounded-xl border border-brown/20 bg-cream px-4 py-3 text-sm text-text-main focus:border-terracota focus:outline-none"
               >
                 <option value="">Sin categoría</option>
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
                 ))}
+                <option value="__custom__">Otra categoría…</option>
               </select>
+              {showCustomCategory && (
+                <input
+                  type="text"
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  placeholder="Escribe la categoría"
+                  autoFocus
+                  className="mt-2 w-full rounded-xl border border-terracota/40 bg-cream px-4 py-3 text-sm text-text-main placeholder:text-text-soft focus:border-terracota focus:outline-none focus:ring-1 focus:ring-terracota"
+                />
+              )}
             </div>
           </div>
 

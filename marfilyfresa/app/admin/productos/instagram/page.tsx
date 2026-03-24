@@ -7,6 +7,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
 const CATEGORIES = ["anillos", "collares", "pulseras", "pendientes", "bolsos", "sudaderas", "otros"]
+const KNOWN_CATEGORIES = new Set(CATEGORIES)
 
 export default function InstagramImportPage() {
   const [url, setUrl] = useState("")
@@ -21,6 +22,8 @@ export default function InstagramImportPage() {
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
   const [category, setCategory] = useState("")
+  const [customCategory, setCustomCategory] = useState("")
+  const [showCustomCategory, setShowCustomCategory] = useState(false)
   const [imageUrl, setImageUrl] = useState("")
   const [analyzed, setAnalyzed] = useState(false)
 
@@ -59,7 +62,14 @@ export default function InstagramImportPage() {
       setName(data.data.name ?? "")
       setDescription(data.data.description ?? "")
       setPrice(data.data.price?.toString() ?? "")
-      setCategory(data.data.category ?? "")
+      const aiCategory = data.data.category ?? ""
+      if (aiCategory && !KNOWN_CATEGORIES.has(aiCategory)) {
+        setShowCustomCategory(true)
+        setCustomCategory(aiCategory)
+        setCategory("")
+      } else {
+        setCategory(aiCategory)
+      }
       setImageUrl(data.data.image_url ?? "")
       setAnalyzed(true)
     } catch (err) {
@@ -87,7 +97,7 @@ export default function InstagramImportPage() {
         name,
         description: description || null,
         price: parseFloat(price),
-        category: category || null,
+        category: (showCustomCategory ? customCategory.trim() : category) || null,
         image_url: finalImageUrl || null,
         is_featured: false,
         is_on_sale: false,
@@ -241,15 +251,35 @@ export default function InstagramImportPage() {
                 <div>
                   <label className="block text-sm font-medium text-text-main mb-1">Categoría</label>
                   <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    value={showCustomCategory ? "__custom__" : category}
+                    onChange={(e) => {
+                      if (e.target.value === "__custom__") {
+                        setShowCustomCategory(true)
+                        setCategory("")
+                      } else {
+                        setShowCustomCategory(false)
+                        setCustomCategory("")
+                        setCategory(e.target.value)
+                      }
+                    }}
                     className="w-full rounded-xl border border-brown/20 bg-cream px-4 py-3 text-sm text-text-main focus:border-terracota focus:outline-none"
                   >
                     <option value="">Sin categoría</option>
                     {CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
                     ))}
+                    <option value="__custom__">Otra categoría…</option>
                   </select>
+                  {showCustomCategory && (
+                    <input
+                      type="text"
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      placeholder="Escribe la categoría"
+                      autoFocus
+                      className="mt-2 w-full rounded-xl border border-terracota/40 bg-cream px-4 py-3 text-sm text-text-main placeholder:text-text-soft focus:border-terracota focus:outline-none focus:ring-1 focus:ring-terracota"
+                    />
+                  )}
                 </div>
               </div>
             </div>
