@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Heart, ShoppingBag, Menu, X, Instagram, MessageCircle, User, ChevronDown } from "lucide-react"
 import { useShop } from "@/context/shop-context"
@@ -60,9 +61,8 @@ export function Navbar() {
             <div className="flex h-16 items-center justify-between">
 
               {/* Logo */}
-              <Link href="/" className="flex items-center gap-1">
-                <span className="font-serif text-xl text-text-main">MarfilFresa</span>
-                <span className="text-sm">🍓</span>
+              <Link href="/" className="flex items-center">
+                <Image src="/logo.svg" alt="MarfilYFresa" width={120} height={45} priority />
               </Link>
 
               {/* Desktop Navigation */}

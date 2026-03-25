@@ -1,5 +1,5 @@
 // lib/types.ts
-// Tipos TypeScript generados a partir del schema de Supabase de MarfilFresa
+// Tipos TypeScript generados a partir del schema de Supabase de MarfilYFresa
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
 

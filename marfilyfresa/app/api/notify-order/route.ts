@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     `).join('')
 
     await resend.emails.send({
-      from: 'MarfilFresa <pedidos@marfilfresa.com>',
+      from: 'MarfilYFresa <pedidos@marfilfresa.com>',
       to: process.env.ADMIN_EMAIL!,
       subject: `🍓 Nuevo pedido de ${customerName} — ${total.toFixed(2)} €`,
       html: `
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
         <tr>
           <td style="background:#d1774c;border-radius:16px 16px 0 0;padding:32px;text-align:center;">
-            <h1 style="margin:0;font-size:24px;color:#ffffff;">MarfilFresa 🍓</h1>
+            <h1 style="margin:0;font-size:24px;color:#ffffff;">MarfilYFresa 🍓</h1>
             <p style="margin:8px 0 0;color:#efe7dd;font-size:15px;">¡Nuevo pedido recibido!</p>
           </td>
         </tr>

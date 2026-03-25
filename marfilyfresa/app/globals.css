@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* MarfilFresa Color Palette */
+  /* MarfilYFresa Color Palette */
   --background: #efe7dd;
   --foreground: #764b36;
   --card: #FFFFFF;
@@ -26,7 +26,7 @@
   --ring: #d1774c;
   --radius: 0.75rem;
   
-  /* Custom MarfilFresa tokens */
+  /* Custom MarfilYFresa tokens */
   --cream: #efe7dd;
   --terracota: #d1774c;
   --brown: #764b36;
@@ -62,7 +62,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   
-  /* MarfilFresa custom colors */
+  /* MarfilYFresa custom colors */
   --color-cream: var(--cream);
   --color-terracota: var(--terracota);
   --color-brown: var(--brown);

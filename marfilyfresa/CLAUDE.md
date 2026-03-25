@@ -1,4 +1,4 @@
-# MarfilFresa 🍓 — Guía del Proyecto
+# MarfilYFresa 🍓 — Guía del Proyecto
 
 ## Descripción
 Tienda online de joyería colorida y divertida, con novedades ocasionales

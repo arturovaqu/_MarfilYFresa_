@@ -81,7 +81,7 @@ function AuthContent() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-brown/10">
         <Link href="/" className="flex items-center gap-1">
-          <span className="font-serif text-xl text-text-main">MarfilFresa</span>
+          <span className="font-serif text-xl text-text-main">MarfilYFresa</span>
           <span className="text-sm">🍓</span>
         </Link>
       </div>
@@ -97,7 +97,7 @@ function AuthContent() {
             <p className="text-center text-sm text-text-soft mb-8">
               {mode === "login"
                 ? "Inicia sesión para ver tus favoritos y hacer pedidos"
-                : "Únete a MarfilFresa 🍓"}
+                : "Únete a MarfilYFresa 🍓"}
             </p>
 
             {/* Tabs */}

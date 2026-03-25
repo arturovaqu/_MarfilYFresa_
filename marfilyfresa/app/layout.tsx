@@ -16,7 +16,7 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'MarfilFresa 🍓 | Joyería colorida y divertida',
+  title: 'MarfilYFresa 🍓 | Joyería colorida y divertida',
   description: 'Joyería colorida y única para chicas jóvenes. Anillos, collares, pulseras y pendientes que te hacen sonreír.',
   icons: {
     icon: [

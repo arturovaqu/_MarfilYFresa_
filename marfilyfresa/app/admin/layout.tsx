@@ -31,7 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Top header */}
       <header className="bg-brown text-cream px-6 py-4 flex items-center justify-between flex-shrink-0 z-10 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="font-serif text-xl text-cream">MarfilFresa</span>
+          <span className="font-serif text-xl text-cream">MarfilYFresa</span>
           <span className="rounded-full bg-terracota px-3 py-0.5 text-xs text-white">Admin</span>
         </div>
         <Link href="/" className="text-sm text-cream/70 hover:text-cream transition-colors">

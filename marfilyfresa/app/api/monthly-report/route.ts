@@ -87,9 +87,9 @@ export async function GET(request: NextRequest) {
     })
 
     await resend.emails.send({
-      from: 'MarfilFresa <informes@marfilfresa.com>',
+      from: 'MarfilYFresa <informes@marfilfresa.com>',
       to: process.env.ADMIN_EMAIL!,
-      subject: `📊 Informe mensual MarfilFresa — ${monthName}`,
+      subject: `📊 Informe mensual MarfilYFresa — ${monthName}`,
       html: emailHtml,
     })
 
@@ -159,7 +159,7 @@ function generateEmailHtml({
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Informe mensual MarfilFresa</title>
+  <title>Informe mensual MarfilYFresa</title>
 </head>
 <body style="margin:0;padding:0;background:#efe7dd;font-family:'DM Sans',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#efe7dd;padding:40px 20px;">
@@ -171,7 +171,7 @@ function generateEmailHtml({
           <tr>
             <td style="background:#d1774c;border-radius:16px 16px 0 0;padding:32px;text-align:center;">
               <h1 style="margin:0;font-size:28px;color:#ffffff;font-family:Georgia,serif;">
-                MarfilFresa 🍓
+                MarfilYFresa 🍓
               </h1>
               <p style="margin:8px 0 0;color:#efe7dd;font-size:16px;">
                 Informe mensual — ${monthName}
@@ -261,7 +261,7 @@ function generateEmailHtml({
             <td style="padding:24px;text-align:center;">
               <p style="margin:0;font-size:12px;color:#a07860;">
                 Este informe se genera automáticamente el día 1 de cada mes.<br>
-                MarfilFresa 🍓
+                MarfilYFresa 🍓
               </p>
             </td>
           </tr>

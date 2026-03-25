@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     // Send email notification to admin
     await resend.emails.send({
-      from: "MarfilFresa <onboarding@resend.dev>",
+      from: "MarfilYFresa <onboarding@resend.dev>",
       to: process.env.ADMIN_EMAIL!,
       subject: `Nuevo mensaje de contacto: ${subject || "Sin asunto"}`,
       html: `
@@ -42,14 +42,14 @@ export async function POST(req: NextRequest) {
             ${message.replace(/\n/g, "<br>")}
           </blockquote>
           <hr style="border-color: #efe7dd; margin: 24px 0;" />
-          <p style="color: #a07860; font-size: 12px;">MarfilFresa — Panel de administración</p>
+          <p style="color: #a07860; font-size: 12px;">MarfilYFresa — Panel de administración</p>
         </div>
       `,
     })
 
     // Send confirmation email to user
     await resend.emails.send({
-      from: "MarfilFresa <onboarding@resend.dev>",
+      from: "MarfilYFresa <onboarding@resend.dev>",
       to: email,
       subject: "Hemos recibido tu mensaje 🍓",
       html: `
@@ -58,10 +58,10 @@ export async function POST(req: NextRequest) {
           <p style="color: #a07860;">Hemos recibido tu mensaje y te responderemos lo antes posible.</p>
           ${subject ? `<p><strong>Tu asunto:</strong> ${subject}</p>` : ""}
           <p style="color: #a07860; font-size: 14px;">
-            Mientras tanto, puedes explorar nuestra colección en <a href="${process.env.NEXT_PUBLIC_SITE_URL}" style="color: #d1774c;">MarfilFresa</a>.
+            Mientras tanto, puedes explorar nuestra colección en <a href="${process.env.NEXT_PUBLIC_SITE_URL}" style="color: #d1774c;">MarfilYFresa</a>.
           </p>
           <hr style="border-color: #efe7dd; margin: 24px 0;" />
-          <p style="color: #a07860; font-size: 12px;">MarfilFresa 🍓 — Joyería colorida y divertida</p>
+          <p style="color: #a07860; font-size: 12px;">MarfilYFresa 🍓 — Joyería colorida y divertida</p>
         </div>
       `,
     })

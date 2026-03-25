@@ -1,8 +1,13 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 
 export function Hero() {
+  function scrollTo(id: string) {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
+  }
+
   return (
     <section id="inicio" className="relative min-h-[90vh] bg-cream overflow-hidden">
       {/* Decorative elements */}
@@ -21,35 +26,39 @@ export function Hero() {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex min-h-[90vh] flex-col items-center justify-center text-center">
-          {/* Brand name */}
-          <p className="mb-5 font-serif text-2xl sm:text-3xl text-terracota tracking-wide">
-            MarfilFresa 🍓
-          </p>
+          {/* Logo */}
+          <Image
+            src="/logo.svg"
+            alt="MarfilYFresa"
+            width={280}
+            height={105}
+            priority
+            className="mb-10"
+          />
 
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-text-main text-balance leading-tight">
-            Joyería que te hace sonreír
-          </h1>
-
-          <p className="mt-6 max-w-xl text-lg sm:text-xl text-text-soft text-pretty">
-            Piezas coloridas y únicas para el día a día
-          </p>
-
-          <div className="mt-10 flex flex-col sm:flex-row items-center gap-3">
+          {/* Buttons */}
+          <div className="flex flex-row items-center justify-center gap-3 flex-wrap">
+            <button
+              onClick={() => scrollTo("novedades")}
+              className="inline-flex items-center justify-center rounded-full bg-terracota px-7 py-3.5 text-base font-medium text-white transition-all hover:bg-brown hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brown focus:ring-offset-2 focus:ring-offset-cream"
+            >
+              Novedades
+            </button>
+            <button
+              onClick={() => scrollTo("ofertas")}
+              className="inline-flex items-center justify-center rounded-full bg-terracota px-7 py-3.5 text-base font-medium text-white transition-all hover:bg-brown hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brown focus:ring-offset-2 focus:ring-offset-cream"
+            >
+              Ofertas
+            </button>
             <Link
               href="/catalogo"
-              className="inline-flex items-center justify-center rounded-full bg-terracota px-8 py-4 text-base font-medium text-white transition-all hover:bg-brown hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brown focus:ring-offset-2 focus:ring-offset-cream"
+              className="inline-flex items-center justify-center rounded-full bg-terracota px-7 py-3.5 text-base font-medium text-white transition-all hover:bg-brown hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brown focus:ring-offset-2 focus:ring-offset-cream"
             >
-              Ver colección
-            </Link>
-            <Link
-              href="/catalogo"
-              className="inline-flex items-center justify-center rounded-full border-2 border-brown/30 px-8 py-4 text-base font-medium text-text-main transition-all hover:border-terracota hover:text-terracota focus:outline-none"
-            >
-              Ver todo el catálogo
+              Ver catálogo
             </Link>
           </div>
 
-          <p className="mt-6 text-sm text-text-soft">
+          <p className="mt-6 text-sm text-text-soft text-center">
             Joyas de acero inoxidable y plata · Desde 2021
           </p>
         </div>

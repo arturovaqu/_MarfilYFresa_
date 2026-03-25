@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
             },
             {
               type: 'text',
-              text: `Analiza este producto de joyería/moda de la tienda MarfilFresa.
+              text: `Analiza este producto de joyería/moda de la tienda MarfilYFresa.
 ${description ? `Descripción del post: "${description}"` : ''}
 
 Extrae la información y devuelve ÚNICAMENTE un objeto JSON con esta estructura exacta, sin explicaciones ni texto adicional:
@@ -102,7 +102,7 @@ Si no encuentras el precio, pon null. El nombre debe ser conciso (máximo 5 pala
         // Si falla la descarga de la imagen, analizamos solo el texto
         messages.push({
           role: 'user',
-          content: `Analiza este producto de la tienda de joyería MarfilFresa basándote en esta descripción:
+          content: `Analiza este producto de la tienda de joyería MarfilYFresa basándote en esta descripción:
 "${description}"
 
 Devuelve ÚNICAMENTE un objeto JSON con esta estructura exacta, sin explicaciones ni texto adicional:
@@ -120,7 +120,7 @@ Si no encuentras el precio, pon null.`,
       // Solo texto
       messages.push({
         role: 'user',
-        content: `Analiza este producto de la tienda de joyería MarfilFresa basándote en esta descripción:
+        content: `Analiza este producto de la tienda de joyería MarfilYFresa basándote en esta descripción:
 "${description}"
 
 Devuelve ÚNICAMENTE un objeto JSON con esta estructura exacta, sin explicaciones ni texto adicional:

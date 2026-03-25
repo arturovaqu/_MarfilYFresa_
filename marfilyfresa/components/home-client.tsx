@@ -3,6 +3,7 @@
 import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
 import { NewProducts } from "@/components/new-products"
+import { SaleProducts } from "@/components/sale-products"
 import { Footer } from "@/components/footer"
 
 interface Product {
@@ -17,8 +18,8 @@ interface Product {
   category: string | null
 }
 
-export function HomeClient({ products }: { products: Product[] }) {
-  const formattedProducts = products.map((p) => ({
+function formatProduct(p: Product) {
+  return {
     id: p.id,
     name: p.name,
     description: p.description,
@@ -28,13 +29,22 @@ export function HomeClient({ products }: { products: Product[] }) {
     isNew: p.is_featured ?? false,
     isOnSale: p.is_on_sale ?? false,
     category: p.category,
-  }))
+  }
+}
 
+export function HomeClient({
+  products,
+  saleProducts,
+}: {
+  products: Product[]
+  saleProducts: Product[]
+}) {
   return (
     <main className="min-h-screen">
       <Navbar />
       <Hero />
-      <NewProducts products={formattedProducts} />
+      <NewProducts products={products.map(formatProduct)} />
+      <SaleProducts products={saleProducts.map(formatProduct)} />
       <Footer />
     </main>
   )

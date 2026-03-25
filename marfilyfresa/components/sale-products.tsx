@@ -21,7 +21,7 @@ interface Product {
   category?: string | null
 }
 
-export function NewProducts({ products }: { products: Product[] }) {
+export function SaleProducts({ products }: { products: Product[] }) {
   const { favorites, toggleFavorite, addToCart } = useShop()
   const router = useRouter()
   const supabase = createSupabaseBrowserClient()
@@ -70,27 +70,14 @@ export function NewProducts({ products }: { products: Product[] }) {
     }
   }, [selectedProduct])
 
-  if (products.length === 0) {
-    return (
-      <section id="novedades" className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="font-serif text-3xl text-text-main text-center mb-4">
-            Lo nuevo 🌸
-          </h2>
-          <p className="text-center text-text-soft text-sm">
-            ¡Pronto habrá novedades!
-          </p>
-        </div>
-      </section>
-    )
-  }
+  if (products.length === 0) return null
 
   return (
     <>
-      <section id="novedades" className="py-16 px-4 sm:px-6 lg:px-8">
+      <section id="ofertas" className="py-16 px-4 sm:px-6 lg:px-8 bg-terracota/5">
         <div className="mx-auto max-w-7xl">
           <h2 className="font-serif text-3xl text-text-main text-center mb-10">
-            Lo nuevo 🌸
+            Ofertas 🏷️
           </h2>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -122,18 +109,9 @@ export function NewProducts({ products }: { products: Product[] }) {
                         Agotado
                       </span>
                     ) : (
-                      <>
-                        {product.isNew && (
-                          <span className="absolute left-3 top-3 rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
-                            Novedad
-                          </span>
-                        )}
-                        {product.isOnSale && !product.isNew && (
-                          <span className="absolute left-3 top-3 rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
-                            Oferta
-                          </span>
-                        )}
-                      </>
+                      <span className="absolute left-3 top-3 rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
+                        Oferta
+                      </span>
                     )}
 
                     <button
@@ -281,18 +259,9 @@ export function NewProducts({ products }: { products: Product[] }) {
                       Agotado
                     </span>
                   ) : (
-                    <>
-                      {selectedProduct.isNew && (
-                        <span className="rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
-                          Novedad
-                        </span>
-                      )}
-                      {selectedProduct.isOnSale && (
-                        <span className="rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
-                          Oferta
-                        </span>
-                      )}
-                    </>
+                    <span className="rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
+                      Oferta
+                    </span>
                   )}
                 </div>
               </div>

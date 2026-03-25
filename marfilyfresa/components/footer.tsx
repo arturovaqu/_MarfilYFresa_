@@ -64,7 +64,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-10 border-t border-cream/10 pt-6 text-center">
           <p className="text-xs text-cream/60">
-            © {currentYear} MarfilFresa. Todos los derechos reservados.
+            © {currentYear} MarfilYFresa. Todos los derechos reservados.
           </p>
         </div>
       </div>

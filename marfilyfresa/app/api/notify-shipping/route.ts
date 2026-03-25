@@ -66,9 +66,9 @@ export async function POST(req: NextRequest) {
       .join("")
 
     await resend.emails.send({
-      from: "MarfilFresa <onboarding@resend.dev>",
+      from: "MarfilYFresa <onboarding@resend.dev>",
       to: order.customer_email,
-      subject: `Tu pedido MarfilFresa está en camino 🍓`,
+      subject: `Tu pedido MarfilYFresa está en camino 🍓`,
       html: `
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#efe7dd;font-family:Arial,sans-serif;">
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
 
         <tr>
           <td style="background:#d1774c;border-radius:16px 16px 0 0;padding:32px;text-align:center;">
-            <h1 style="margin:0;font-size:24px;color:#fff;">MarfilFresa 🍓</h1>
+            <h1 style="margin:0;font-size:24px;color:#fff;">MarfilYFresa 🍓</h1>
             <p style="margin:8px 0 0;color:#ffe8dc;font-size:15px;">¡Tu pedido está en camino!</p>
           </td>
         </tr>
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
 
         <tr>
           <td style="padding:0 24px 24px;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#a07860;">MarfilFresa — Joyería colorida y divertida</p>
+            <p style="margin:0;font-size:12px;color:#a07860;">MarfilYFresa — Joyería colorida y divertida</p>
           </td>
         </tr>
 

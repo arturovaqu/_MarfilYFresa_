@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .single()
 
   if (!product) {
-    return { title: "Producto no encontrado | MarfilFresa" }
+    return { title: "Producto no encontrado | MarfilYFresa" }
   }
 
-  const title = `${product.name} | MarfilFresa`
+  const title = `${product.name} | MarfilYFresa`
   const description =
     product.description ??
-    `${product.name} — Joyería colorida y divertida de MarfilFresa.`
+    `${product.name} — Joyería colorida y divertida de MarfilYFresa.`
 
   return {
     title,

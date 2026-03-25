@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
 export const metadata = {
-  title: "Nosotros | MarfilFresa",
-  description: "Conoce la historia de MarfilFresa, tu tienda de joyería colorida y divertida.",
+  title: "Nosotros | MarfilYFresa",
+  description: "Conoce la historia de MarfilYFresa, tu tienda de joyería colorida y divertida.",
 }
 
 export default function NosotrosPage() {
@@ -35,7 +35,7 @@ export default function NosotrosPage() {
               {/* Text */}
               <div className="flex-1 text-center lg:text-left">
                 <h1 className="font-serif text-4xl sm:text-5xl text-text-main">
-                  Hola, somos MarfilFresa 🍓
+                  Hola, somos MarfilYFresa 🍓
                 </h1>
 
                 <div className="mt-6 space-y-4 text-text-soft leading-relaxed text-lg">
