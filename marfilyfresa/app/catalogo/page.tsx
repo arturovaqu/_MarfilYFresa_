@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Heart, ShoppingBag, Search, X, Tag, Link2, Check } from "lucide-react"
+import { Heart, ShoppingBag, Search, X, Tag, Link2, Check, BellRing } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { useShop } from "@/context/shop-context"
 import { createSupabaseBrowserClient } from "@/lib/supabase"
+import { StockRequestModal } from "@/components/stock-request-modal"
 
 interface Product {
   id: string
@@ -15,6 +16,7 @@ interface Product {
   description: string | null
   price: number
   image_url: string | null
+  stock: number | null
   category: string | null
   is_featured: boolean | null
   is_on_sale: boolean | null
@@ -31,6 +33,10 @@ export default function CatalogoPage() {
   const [storeMaxPrice, setStoreMaxPrice] = useState(0)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [copied, setCopied] = useState(false)
+  const [stockRequestProduct, setStockRequestProduct] = useState<{
+    id: string
+    name: string
+  } | null>(null)
 
   const { favorites, toggleFavorite, addToCart } = useShop()
   const supabase = createSupabaseBrowserClient()
@@ -203,7 +209,9 @@ export default function CatalogoPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((product) => (
+            {filtered.map((product) => {
+              const isOutOfStock = product.stock === null || product.stock <= 0
+              return (
               <article key={product.id} className="group relative">
                 <div
                   className="relative aspect-square overflow-hidden rounded-2xl bg-white cursor-pointer"
@@ -213,19 +221,33 @@ export default function CatalogoPage() {
                     src={product.image_url ?? "/placeholder.jpg"}
                     alt={product.name}
                     fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    className={`object-cover transition-transform duration-300 group-hover:scale-105${
+                      isOutOfStock ? " grayscale" : ""
+                    }`}
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
 
-                  {product.is_featured && (
-                    <span className="absolute left-3 top-3 rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
-                      Novedad
-                    </span>
+                  {isOutOfStock && (
+                    <div className="absolute inset-0 bg-white/20 pointer-events-none" />
                   )}
-                  {product.is_on_sale && !product.is_featured && (
-                    <span className="absolute left-3 top-3 rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
-                      Oferta
+
+                  {isOutOfStock ? (
+                    <span className="absolute left-3 top-3 rounded-full bg-brown/80 px-3 py-1 text-xs font-medium text-white">
+                      Agotado
                     </span>
+                  ) : (
+                    <>
+                      {product.is_featured && (
+                        <span className="absolute left-3 top-3 rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
+                          Novedad
+                        </span>
+                      )}
+                      {product.is_on_sale && !product.is_featured && (
+                        <span className="absolute left-3 top-3 rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
+                          Oferta
+                        </span>
+                      )}
+                    </>
                   )}
 
                   {/* Favorite button */}
@@ -240,24 +262,37 @@ export default function CatalogoPage() {
                     />
                   </button>
 
-                  {/* Add to cart overlay */}
+                  {/* Cart / aviso overlay */}
                   <div className="absolute inset-x-0 bottom-0 translate-y-full transition-transform duration-200 group-hover:translate-y-0">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        addToCart({
-                          id: product.id,
-                          name: product.name,
-                          price: Number(product.price),
-                          image: product.image_url ?? "/placeholder.jpg",
-                          category: product.category,
-                        })
-                      }}
-                      className="flex w-full items-center justify-center gap-2 bg-terracota py-3 text-sm font-medium text-white hover:bg-brown transition-colors"
-                    >
-                      <ShoppingBag className="h-4 w-4" />
-                      Añadir
-                    </button>
+                    {isOutOfStock ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setStockRequestProduct({ id: product.id, name: product.name })
+                        }}
+                        className="flex w-full items-center justify-center gap-2 bg-white/95 py-3 text-sm font-medium text-brown hover:bg-white transition-colors"
+                      >
+                        <BellRing className="h-4 w-4" />
+                        Solicitar aviso
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          addToCart({
+                            id: product.id,
+                            name: product.name,
+                            price: Number(product.price),
+                            image: product.image_url ?? "/placeholder.jpg",
+                            category: product.category,
+                          })
+                        }}
+                        className="flex w-full items-center justify-center gap-2 bg-terracota py-3 text-sm font-medium text-white hover:bg-brown transition-colors"
+                      >
+                        <ShoppingBag className="h-4 w-4" />
+                        Añadir
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -273,7 +308,8 @@ export default function CatalogoPage() {
                   </p>
                 </div>
               </article>
-            ))}
+              )
+            })}
           </div>
         )}
       </main>
@@ -281,7 +317,9 @@ export default function CatalogoPage() {
       <Footer />
 
       {/* Product Modal */}
-      {selectedProduct && (
+      {selectedProduct && (() => {
+        const isOutOfStock = selectedProduct.stock === null || selectedProduct.stock <= 0
+        return (
         <div
           ref={overlayRef}
           onClick={(e) => { if (e.target === overlayRef.current) closeModal() }}
@@ -324,21 +362,32 @@ export default function CatalogoPage() {
                 src={selectedProduct.image_url ?? "/placeholder.jpg"}
                 alt={selectedProduct.name}
                 fill
-                className="object-cover"
+                className={`object-cover${isOutOfStock ? " grayscale" : ""}`}
                 sizes="(max-width: 640px) 100vw, 512px"
                 priority
               />
+              {isOutOfStock && (
+                <div className="absolute inset-0 bg-white/20 pointer-events-none" />
+              )}
               {/* Badges */}
               <div className="absolute left-4 top-4 flex gap-2">
-                {selectedProduct.is_featured && (
-                  <span className="rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
-                    Novedad
+                {isOutOfStock ? (
+                  <span className="rounded-full bg-brown/80 px-3 py-1 text-xs font-medium text-white">
+                    Agotado
                   </span>
-                )}
-                {selectedProduct.is_on_sale && (
-                  <span className="rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
-                    Oferta
-                  </span>
+                ) : (
+                  <>
+                    {selectedProduct.is_featured && (
+                      <span className="rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
+                        Novedad
+                      </span>
+                    )}
+                    {selectedProduct.is_on_sale && (
+                      <span className="rounded-full bg-terracota px-3 py-1 text-xs font-medium text-white">
+                        Oferta
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -368,22 +417,37 @@ export default function CatalogoPage() {
 
               {/* Actions */}
               <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    addToCart({
-                      id: selectedProduct.id,
-                      name: selectedProduct.name,
-                      price: Number(selectedProduct.price),
-                      image: selectedProduct.image_url ?? "/placeholder.jpg",
-                      category: selectedProduct.category,
-                    })
-                    closeModal()
-                  }}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-full bg-terracota py-3 text-sm font-medium text-white hover:bg-brown transition-colors"
-                >
-                  <ShoppingBag className="h-4 w-4" />
-                  Añadir al carrito
-                </button>
+                {isOutOfStock ? (
+                  <button
+                    onClick={() =>
+                      setStockRequestProduct({
+                        id: selectedProduct.id,
+                        name: selectedProduct.name,
+                      })
+                    }
+                    className="flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-brown/30 py-3 text-sm font-medium text-brown hover:border-brown hover:text-text-main transition-colors"
+                  >
+                    <BellRing className="h-4 w-4" />
+                    Solicitar aviso
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      addToCart({
+                        id: selectedProduct.id,
+                        name: selectedProduct.name,
+                        price: Number(selectedProduct.price),
+                        image: selectedProduct.image_url ?? "/placeholder.jpg",
+                        category: selectedProduct.category,
+                      })
+                      closeModal()
+                    }}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-full bg-terracota py-3 text-sm font-medium text-white hover:bg-brown transition-colors"
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    Añadir al carrito
+                  </button>
+                )}
                 <button
                   onClick={() => handleToggleFavorite(selectedProduct.id, selectedProduct.name)}
                   className="rounded-full border border-brown/20 bg-cream p-3 hover:border-terracota transition-colors"
@@ -398,6 +462,15 @@ export default function CatalogoPage() {
             </div>
           </div>
         </div>
+        )
+      })()}
+
+      {stockRequestProduct && (
+        <StockRequestModal
+          productId={stockRequestProduct.id}
+          productName={stockRequestProduct.name}
+          onClose={() => setStockRequestProduct(null)}
+        />
       )}
 
       <style>{`

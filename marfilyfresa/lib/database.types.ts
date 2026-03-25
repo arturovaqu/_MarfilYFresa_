@@ -213,6 +213,33 @@ export interface Database {
         }
         Relationships: []
       }
+      stock_requests: {
+        Row: {
+          id: string
+          product_id: string | null
+          product_name: string
+          customer_email: string
+          created_at: string
+          notified: boolean | null
+        }
+        Insert: {
+          id?: string
+          product_id?: string | null
+          product_name: string
+          customer_email: string
+          created_at?: string
+          notified?: boolean | null
+        }
+        Update: {
+          id?: string
+          product_id?: string | null
+          product_name?: string
+          customer_email?: string
+          created_at?: string
+          notified?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

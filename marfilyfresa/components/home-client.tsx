@@ -11,6 +11,7 @@ interface Product {
   description: string | null
   price: number
   image_url: string | null
+  stock: number | null
   is_featured: boolean | null
   is_on_sale: boolean | null
   category: string | null
@@ -23,6 +24,7 @@ export function HomeClient({ products }: { products: Product[] }) {
     description: p.description,
     price: Number(p.price),
     image: p.image_url ?? "/placeholder.jpg",
+    stock: p.stock ?? null,
     isNew: p.is_featured ?? false,
     isOnSale: p.is_on_sale ?? false,
     category: p.category,

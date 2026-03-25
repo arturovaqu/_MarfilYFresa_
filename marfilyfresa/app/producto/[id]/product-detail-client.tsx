@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Heart, ShoppingBag, ArrowLeft, Link2, Check, Tag, BellRing } from "lucide-react"
 import { useShop } from "@/context/shop-context"
 import { createSupabaseBrowserClient } from "@/lib/supabase"
+import { StockRequestModal } from "@/components/stock-request-modal"
 
 interface ProductRow {
   id: string
@@ -22,6 +23,7 @@ interface ProductRow {
 
 export default function ProductDetailClient({ product }: { product: ProductRow }) {
   const [copied, setCopied] = useState(false)
+  const [showStockModal, setShowStockModal] = useState(false)
   const { favorites, toggleFavorite, addToCart } = useShop()
   const router = useRouter()
   const supabase = createSupabaseBrowserClient()
@@ -50,12 +52,8 @@ export default function ProductDetailClient({ product }: { product: ProductRow }
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const whatsappMsg = encodeURIComponent(
-    `Hola! Me gustaría recibir aviso cuando "${product.name}" esté disponible de nuevo.`
-  )
-  const whatsappUrl = `https://wa.me/34612345678?text=${whatsappMsg}`
-
   return (
+    <>
     <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       {/* Top bar */}
       <div className="mb-6 flex items-center justify-between">
@@ -132,15 +130,13 @@ export default function ProductDetailClient({ product }: { product: ProductRow }
 
         <div className="flex gap-3">
           {outOfStock ? (
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-brown/30 py-3.5 text-sm font-medium text-text-soft transition-colors hover:border-brown hover:text-text-main"
+            <button
+              onClick={() => setShowStockModal(true)}
+              className="flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-brown/30 py-3.5 text-sm font-medium text-brown transition-colors hover:border-brown hover:text-text-main"
             >
               <BellRing className="h-4 w-4" />
               Solicitar aviso
-            </a>
+            </button>
           ) : (
             <button
               onClick={() =>
@@ -171,5 +167,14 @@ export default function ProductDetailClient({ product }: { product: ProductRow }
         </div>
       </div>
     </main>
+
+    {showStockModal && (
+      <StockRequestModal
+        productId={product.id}
+        productName={product.name}
+        onClose={() => setShowStockModal(false)}
+      />
+    )}
+    </>
   )
 }
