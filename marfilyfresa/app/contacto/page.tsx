@@ -62,7 +62,7 @@ export default function ContactoPage() {
 
               <div className="space-y-4">
                 <a
-                  href="https://wa.me/34612345678"
+                  href="https://wa.me/34644065770"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 rounded-2xl bg-[#25D366]/10 p-4 transition-colors hover:bg-[#25D366]/20"
@@ -201,7 +201,7 @@ export default function ContactoPage() {
               <p className="text-center text-xs text-text-soft">
                 También puedes escribirnos directamente por{" "}
                 <a
-                  href="https://wa.me/34612345678"
+                  href="https://wa.me/34644065770"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-terracota hover:underline"

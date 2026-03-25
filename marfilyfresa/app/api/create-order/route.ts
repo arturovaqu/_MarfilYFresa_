@@ -247,7 +247,7 @@ export async function POST(req: NextRequest) {
                 <td style="padding:14px 0 0;border-top:1px solid #efe7dd;font-weight:bold;color:#d1774c;font-size:16px;text-align:right;">${total.toFixed(2)} €</td>
               </tr>
             </table>
-            <p style="margin:24px 0 0;font-size:13px;color:#a07860;">¿Tienes alguna pregunta? Escríbenos por <a href="https://wa.me/34612345678" style="color:#d1774c;">WhatsApp</a> o responde a este email.</p>
+            <p style="margin:24px 0 0;font-size:13px;color:#a07860;">¿Tienes alguna pregunta? Escríbenos por <a href="https://wa.me/34644065770" style="color:#d1774c;">WhatsApp</a> o responde a este email.</p>
           </td>
         </tr>
         <tr>

@@ -93,7 +93,7 @@ export function Navbar() {
 
                 {/* WhatsApp */}
                 <a
-                  href="https://wa.me/34612345678"
+                  href="https://wa.me/34644065770"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hidden sm:block p-2 text-text-main transition-colors hover:text-terracota"

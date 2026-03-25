@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
             </p>
             <p style="margin:0;font-size:14px;color:#a07860;line-height:1.6;">
               Si tienes cualquier duda, escríbenos por
-              <a href="https://wa.me/34612345678" style="color:#d1774c;text-decoration:none;">WhatsApp</a>
+              <a href="https://wa.me/34644065770" style="color:#d1774c;text-decoration:none;">WhatsApp</a>
               y te respondemos enseguida. 🍓
             </p>
           </td>
