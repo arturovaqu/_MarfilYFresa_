@@ -125,10 +125,10 @@ ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 - /admin/usuarios → ver todos, cambiar rol
 - /admin/contactos → mensajes, marcar leído, badge no leídos
 
-## Emails via Resend
-- ADMIN_EMAIL = arthur.va.qu@gmail.com
+## Emails via Nodemailer + Gmail
+- ADMIN_EMAIL = marfilyfresa@gmail.com
 - Nuevo pedido → email cliente + email admin
-- Nuevo contacto → email a arthur.va.qu@gmail.com + guarda en BD
+- Nuevo contacto → email a marfilyfresa@gmail.com + guarda en BD
 - Informe mensual → día 1 de cada mes a las 9:00
 
 ## Variables de entorno (.env.local)
@@ -136,8 +136,9 @@ ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 - NEXT_PUBLIC_SUPABASE_ANON_KEY
 - SUPABASE_SERVICE_ROLE_KEY
 - ANTHROPIC_API_KEY
-- RESEND_API_KEY
-- ADMIN_EMAIL=arthur.va.qu@gmail.com
+- GMAIL_USER=marfilyfresa@gmail.com
+- GMAIL_APP_PASSWORD=<contraseña-de-aplicación-de-gmail>
+- ADMIN_EMAIL=marfilyfresa@gmail.com
 - CRON_SECRET
 - NEXT_PUBLIC_SITE_URL
 
