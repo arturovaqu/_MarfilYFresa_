@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from "@/lib/supabase-server"
+import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase-server"
 import Link from "next/link"
 import { Plus, Pencil, Instagram, AlertCircle } from "lucide-react"
 import { DeleteProductButton } from "@/components/admin/delete-product-button"
@@ -19,6 +19,7 @@ export default async function AdminProductosPage({
       : "todos"
 
   const supabase = await createSupabaseServerClient()
+  const admin = createSupabaseAdminClient()
 
   // ── Todos ─────────────────────────────────────────────────────────────────
   const { data: allProducts } = await supabase
@@ -35,7 +36,7 @@ export default async function AdminProductosPage({
   const agotadoIds = agotados.map((p) => p.id)
   const { data: requestRows } =
     agotadoIds.length > 0
-      ? await supabase
+      ? await admin
           .from("stock_requests")
           .select("product_id")
           .in("product_id", agotadoIds)
@@ -49,7 +50,7 @@ export default async function AdminProductosPage({
   }
 
   // ── Solicitudes ───────────────────────────────────────────────────────────
-  const { data: solicitudes } = await supabase
+  const { data: solicitudes } = await admin
     .from("stock_requests")
     .select("*")
     .order("created_at", { ascending: false })
