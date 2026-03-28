@@ -43,6 +43,21 @@ export async function POST(request: NextRequest) {
       const shortcodeMatch = url.match(/instagram\.com\/p\/([A-Za-z0-9_-]+)/)
       const shortcode = shortcodeMatch?.[1]
 
+      // Estrategia 0: oEmbed API (pública, sin auth, devuelve thumbnail_url)
+      if (shortcode && !imageUrl) {
+        try {
+          const oembedUrl = `https://api.instagram.com/oembed/?url=${encodeURIComponent(`https://www.instagram.com/p/${shortcode}/`)}&omitscript=true`
+          const res = await fetch(oembedUrl, { headers: { 'User-Agent': browserUA } })
+          if (res.ok) {
+            const data = await res.json() as { thumbnail_url?: string; title?: string }
+            if (data.thumbnail_url) imageUrl = data.thumbnail_url
+            if (!manualDescription && data.title) description = data.title
+          }
+        } catch {
+          console.warn('Estrategia oEmbed falló')
+        }
+      }
+
       // Estrategia 1: endpoint /embed/
       if (shortcode && !imageUrl) {
         try {
