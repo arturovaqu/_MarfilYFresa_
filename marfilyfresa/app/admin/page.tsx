@@ -1,6 +1,8 @@
 import { createSupabaseServerClient } from "@/lib/supabase-server"
 import Link from "next/link"
 import { Package, ShoppingBag, Users, Heart, Instagram } from "lucide-react"
+import { EarningsWidget } from "@/components/admin/earnings-widget"
+import { Suspense } from "react"
 
 interface Order {
   id: string
@@ -10,8 +12,42 @@ interface Order {
   created_at: string
 }
 
-export default async function AdminPage() {
+interface SearchParams {
+  period?: string
+  from?: string
+  to?: string
+}
+
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>
+}) {
+  const { period, from, to } = await searchParams
   const supabase = await createSupabaseServerClient()
+
+  // Build earnings query based on filters
+  let earningsQuery = supabase
+    .from("orders")
+    .select("total_amount")
+    .eq("status", "confirmed")
+
+  if (period === "month") {
+    const now = new Date()
+    const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+    earningsQuery = earningsQuery.gte("created_at", start)
+  } else if (period === "year") {
+    const start = new Date(new Date().getFullYear(), 0, 1).toISOString()
+    earningsQuery = earningsQuery.gte("created_at", start)
+  } else if (period === "custom") {
+    if (from) earningsQuery = earningsQuery.gte("created_at", from)
+    if (to) {
+      // include the full end day
+      const endOfDay = new Date(to)
+      endOfDay.setHours(23, 59, 59, 999)
+      earningsQuery = earningsQuery.lte("created_at", endOfDay.toISOString())
+    }
+  }
 
   const [
     { count: totalProducts },
@@ -20,6 +56,7 @@ export default async function AdminPage() {
     { count: totalWishlist },
     { count: pendingOrders },
     { data: recentOrders },
+    { data: confirmedOrders },
   ] = await Promise.all([
     supabase.from("products").select("*", { count: "exact", head: true }),
     supabase.from("orders").select("*", { count: "exact", head: true }),
@@ -31,7 +68,11 @@ export default async function AdminPage() {
       .select("id, order_number, total_amount, status, created_at")
       .order("created_at", { ascending: false })
       .limit(5) as unknown as { data: Order[] },
+    earningsQuery as unknown as { data: { total_amount: number }[] | null },
   ])
+
+  const earningsTotal = confirmedOrders?.reduce((sum, o) => sum + Number(o.total_amount), 0) ?? 0
+  const earningsCount = confirmedOrders?.length ?? 0
 
   const stats = [
     { label: "Productos", value: totalProducts ?? 0, icon: Package, href: "/admin/productos" },
@@ -103,6 +144,11 @@ export default async function AdminPage() {
           </div>
         </Link>
       </div>
+
+      {/* Earnings */}
+      <Suspense fallback={null}>
+        <EarningsWidget total={earningsTotal} count={earningsCount} />
+      </Suspense>
 
       {/* Recent orders */}
       <div className="rounded-2xl bg-white overflow-hidden">
