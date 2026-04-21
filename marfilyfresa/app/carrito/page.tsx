@@ -18,6 +18,7 @@ interface DiscountResult {
   finalTotal: number
 }
 
+
 const PICKUP_POINTS = [
   { id: "opcion-1", label: "Opción 1" },
   { id: "opcion-2", label: "Opción 2" },
