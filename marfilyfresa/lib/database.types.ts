@@ -213,6 +213,42 @@ export interface Database {
         }
         Relationships: []
       }
+      discount_codes: {
+        Row: {
+          id: string
+          code: string
+          starts_at: string
+          ends_at: string
+          product_ids: string[]
+          discount_type: "percentage" | "fixed"
+          discount_value: number
+          active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          starts_at: string
+          ends_at: string
+          product_ids?: string[]
+          discount_type: "percentage" | "fixed"
+          discount_value: number
+          active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          starts_at?: string
+          ends_at?: string
+          product_ids?: string[]
+          discount_type?: "percentage" | "fixed"
+          discount_value?: number
+          active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
       stock_requests: {
         Row: {
           id: string

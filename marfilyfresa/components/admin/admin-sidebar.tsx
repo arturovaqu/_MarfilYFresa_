@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Package, ShoppingBag, Users, MessageCircle, Heart } from "lucide-react"
+import { LayoutDashboard, Package, ShoppingBag, Users, MessageCircle, Heart, Ticket } from "lucide-react"
 
 interface NavItem {
   href: string
@@ -26,6 +26,7 @@ export function AdminSidebar({ unreadContacts, onNavigate }: AdminSidebarProps) 
     { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
     { href: "/admin/usuarios", label: "Usuarios", icon: Users },
     { href: "/admin/favoritos", label: "Favoritos", icon: Heart },
+    { href: "/admin/codigos", label: "Códigos", icon: Ticket },
     { href: "/admin/contactos", label: "Contactos", icon: MessageCircle, badge: unreadContacts },
   ]
 

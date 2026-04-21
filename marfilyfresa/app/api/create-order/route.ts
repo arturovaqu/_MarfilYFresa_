@@ -21,9 +21,34 @@ interface CartItemPayload {
   quantity: number
 }
 
+interface DiscountCode {
+  discount_type: "percentage" | "fixed"
+  discount_value: number
+  product_ids: string[]
+  starts_at: string
+  ends_at: string
+}
+
+function applyDiscount(items: CartItemPayload[], dc: DiscountCode): number {
+  let total = 0
+  for (const item of items) {
+    const eligible = dc.product_ids.length === 0 || dc.product_ids.includes(item.id)
+    let price = item.price
+    if (eligible) {
+      if (dc.discount_type === "percentage") {
+        price = item.price * (1 - dc.discount_value / 100)
+      } else {
+        price = Math.min(dc.discount_value, item.price)
+      }
+    }
+    total += price * item.quantity
+  }
+  return Math.round(total * 100) / 100
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { customerName, customerPhone, customerAddress, notes, items, total } =
+    const { customerName, customerPhone, customerAddress, notes, items, total, discountCode } =
       (await req.json()) as {
         customerName: string
         customerPhone: string
@@ -31,6 +56,7 @@ export async function POST(req: NextRequest) {
         notes?: string
         items: CartItemPayload[]
         total: number
+        discountCode?: string
       }
 
     if (!customerName || !customerPhone || !customerAddress || !items?.length) {
@@ -47,6 +73,29 @@ export async function POST(req: NextRequest) {
     }
 
     const admin = createSupabaseAdminClient()
+
+    // 0. Validar código de descuento (si se envió)
+    let appliedDiscount: DiscountCode | null = null
+    let finalTotal = total
+
+    if (discountCode) {
+      const { data: dc } = await admin
+        .from("discount_codes")
+        .select("*")
+        .eq("code", discountCode.trim().toUpperCase())
+        .single()
+
+      if (!dc) {
+        return NextResponse.json({ error: "Código de descuento no válido" }, { status: 400 })
+      }
+      const now = new Date()
+      if (now < new Date(dc.starts_at) || now > new Date(dc.ends_at)) {
+        return NextResponse.json({ error: "El código de descuento ha caducado o no está activo" }, { status: 400 })
+      }
+
+      appliedDiscount = dc as DiscountCode
+      finalTotal = applyDiscount(items, appliedDiscount)
+    }
 
     // 1. Verificar stock de todos los productos
     const productIds = items.map((i) => i.id)
@@ -94,18 +143,26 @@ export async function POST(req: NextRequest) {
     const orderNumber = `MF-${year}-${String((count ?? 0) + 1).padStart(4, "0")}`
 
     // 3. Crear el pedido
+    const discountNotes = appliedDiscount
+      ? `[DESCUENTO: ${discountCode?.toUpperCase()} · ${
+          appliedDiscount.discount_type === "percentage"
+            ? `${appliedDiscount.discount_value}%`
+            : `${appliedDiscount.discount_value.toFixed(2)} € fijo`
+        } · Ahorro: ${(total - finalTotal).toFixed(2)} €]`
+      : null
+
     const { data: order, error: orderError } = await admin
       .from("orders")
       .insert({
         user_id: user.id,
         order_number: orderNumber,
-        total_amount: total,
+        total_amount: finalTotal,
         status: "pending",
         customer_name: customerName,
         customer_email: user.email ?? null,
         customer_phone: customerPhone,
         customer_address: customerAddress,
-        notes: notes || null,
+        notes: [discountNotes, notes || null].filter(Boolean).join("\n") || null,
       })
       .select()
       .single()
@@ -151,13 +208,20 @@ export async function POST(req: NextRequest) {
       )
       .join("")
 
+    const discountRowHtml = appliedDiscount
+      ? `<tr>
+          <td colspan="2" style="padding:8px 0;font-size:13px;color:#a07860;">Descuento (${discountCode?.toUpperCase()})</td>
+          <td style="padding:8px 0;font-size:13px;color:#22a24f;text-align:right;">−${(total - finalTotal).toFixed(2)} €</td>
+        </tr>`
+      : ""
+
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ""
 
     await Promise.allSettled([
       // Email al admin
       sendEmail({
         to: process.env.ADMIN_EMAIL!,
-        subject: `🍓 Nuevo pedido ${orderNumber} de ${customerName} — ${total.toFixed(2)} €`,
+        subject: `🍓 Nuevo pedido ${orderNumber} de ${customerName} — ${finalTotal.toFixed(2)} €`,
         html: `
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#efe7dd;font-family:Arial,sans-serif;">
@@ -173,7 +237,8 @@ export async function POST(req: NextRequest) {
         <tr>
           <td style="background:#fff;padding:32px;">
             <p style="margin:4px 0;font-size:13px;color:#a07860;">Nº pedido: <strong style="color:#764b36;font-family:monospace;">${orderNumber}</strong></p>
-            <p style="margin:4px 0;font-size:13px;color:#a07860;">Total: <strong style="color:#d1774c;">${total.toFixed(2)} €</strong></p>
+            <p style="margin:4px 0;font-size:13px;color:#a07860;">Total: <strong style="color:#d1774c;">${finalTotal.toFixed(2)} €</strong></p>
+            ${appliedDiscount ? `<p style="margin:4px 0;font-size:13px;color:#a07860;">Código: <strong style="color:#22a24f;">${discountCode?.toUpperCase()} (−${(total - finalTotal).toFixed(2)} €)</strong></p>` : ""}
           </td>
         </tr>
         <tr>
@@ -193,9 +258,10 @@ export async function POST(req: NextRequest) {
             <h2 style="margin:0 0 12px;font-size:15px;color:#764b36;">Productos</h2>
             <table width="100%" style="border-collapse:collapse;">
               ${itemsHtml}
+              ${discountRowHtml}
               <tr>
                 <td colspan="2" style="padding:14px 0 0;border-top:1px solid #efe7dd;font-weight:bold;color:#764b36;font-size:14px;">Total</td>
-                <td style="padding:14px 0 0;border-top:1px solid #efe7dd;font-weight:bold;color:#d1774c;font-size:16px;text-align:right;">${total.toFixed(2)} €</td>
+                <td style="padding:14px 0 0;border-top:1px solid #efe7dd;font-weight:bold;color:#d1774c;font-size:16px;text-align:right;">${finalTotal.toFixed(2)} €</td>
               </tr>
             </table>
           </td>
@@ -238,9 +304,10 @@ export async function POST(req: NextRequest) {
             <h2 style="margin:0 0 12px;font-size:15px;color:#764b36;">Resumen de tu pedido</h2>
             <table width="100%" style="border-collapse:collapse;">
               ${itemsHtml}
+              ${discountRowHtml}
               <tr>
                 <td colspan="2" style="padding:14px 0 0;border-top:1px solid #efe7dd;font-weight:bold;color:#764b36;font-size:14px;">Total</td>
-                <td style="padding:14px 0 0;border-top:1px solid #efe7dd;font-weight:bold;color:#d1774c;font-size:16px;text-align:right;">${total.toFixed(2)} €</td>
+                <td style="padding:14px 0 0;border-top:1px solid #efe7dd;font-weight:bold;color:#d1774c;font-size:16px;text-align:right;">${finalTotal.toFixed(2)} €</td>
               </tr>
             </table>
             <p style="margin:24px 0 0;font-size:13px;color:#a07860;">¿Tienes alguna pregunta? Escríbenos por <a href="https://wa.me/34644065770" style="color:#d1774c;">WhatsApp</a> o responde a este email.</p>
